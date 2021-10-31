@@ -2,6 +2,7 @@
 Code for guiding cane vibrating navigation system.
 
 --NOTES AND RESOURCES--
+
 Google Maps Directions API
 https://developers.google.com/maps/documentation/directions/overview
 
