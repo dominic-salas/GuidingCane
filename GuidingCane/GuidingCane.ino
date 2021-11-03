@@ -16,17 +16,20 @@
 /*
  * Code for vibration motor for the guiding cane project.
  * Vibrating motor pulses to communicate with user:
- * TODO: warnings before turns
+ * 
+ * A small vibration warning happens before each turn
+ *
  * 1 pulse = turn right
  * 2 pulses = turn left
  * 3 pulses = stop
- * Possible: instructions for distances, 
+ * 
  */
 
 //init where pins are
-int motorPin = 3;
+int motorPin = 3; //or any other PWM pin
+
 int BLUEFRUIT_UART_MODE_PIN = 12;
-String BLUEFRUIT_HWSERIAL_NAME = "replace this with serial name of module"; //TODO find serial name of module
+String BLUEFRUIT_HWSERIAL_NAME = "replace"; //TODO find serial name of module
 
 //direction - 0 is forward, 1 is right, 2 is left, 3 is stopped
 int dir = 0;
@@ -34,11 +37,17 @@ int dir = 0;
 void setup()
 {
   pinMode(motorPin, OUTPUT);
-  Adafruit_BluefruitLE_UART ble(BLUEFRUIT_HWSERIAL_NAME, BLUEFRUIT_UART_MODE_PIN);
+  //Adafruit_BluefruitLE_UART ble(BLUEFRUIT_HWSERIAL_NAME, BLUEFRUIT_UART_MODE_PIN);
+  //TODO - setup google maps communication
 }
 
 void loop() 
 {
+  /*
+   * TODO - communicate with maps to indicate a turn/direction 
+   * INCLUDING delay and warning (warnDir()) before a turn
+   * NOTE: warning will not trigger for stopping
+   */
   if (dir == 1){
     turnRight();
   }else if (dir == 2){
@@ -46,6 +55,42 @@ void loop()
   }else if (dir == 3){
     stopping();
   }
+  dir = 0;
+}
+
+/*
+ * Method to read google maps and communicate with the phone
+ * to find direction instructions. Also uses warnDir() before left and right turns
+ * TODO - Google maps integration, bluetooth communication, throw warning pings
+ * 
+ * @return random temporary integer from 1-3 to simulate a direction
+ *         and test the vibration system
+ */
+int readMap(){
+  int rand = random(1,4); //getting random int
+  if (rand == 1 || rand == 2){
+    warnDir(); //sends warning ping
+    delay(3000); //waits for 3 seconds
+  }
+  return rand;
+}
+
+/*
+ * Method for making a small vibration pattern 
+ * to indicate a turn coming up
+ */
+void warnDir(){
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(100);
+  digitalWrite(motorPin, LOW); //stop vibrating
+  delay(300);
+  digitalWrite(motorPin, HIGH);
+  delay(100);
+  digitalWrite(motorPin, LOW);
+  delay(50);
+  digitalWrite(motorPin, HIGH);
+  delay(100);
+  digitalWrite(motorPin, LOW);
 }
 
 /*
@@ -55,7 +100,6 @@ void turnRight(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
-  right = false;
 }
 
 /*
@@ -65,17 +109,13 @@ void turnLeft(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
-  left = false;
 }
 
 /*
  * Stopping, pulses motor three times
- * Possible: call turnRight or turnLeft to 
- * indicate what direction destination is
  */
 void stopping(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
-  stop = false;
 }
