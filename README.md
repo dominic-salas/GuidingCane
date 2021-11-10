@@ -8,6 +8,7 @@ Vibrating motor vibrates a certain number of times corresponding to the directio
 - Turn right - vibrate once
 - Turn left - vibrate twice
 - Stop / Arrived at Destination - vibrate three times
+- Before each turn, a beeeep-beep-beep pattern occurs
 
 **To Do**
 - Navigation System
