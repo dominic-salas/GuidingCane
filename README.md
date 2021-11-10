@@ -9,6 +9,12 @@ Vibrating motor vibrates a certain number of times corresponding to the directio
 - Turn left - vibrate twice
 - Stop / Arrived at Destination - vibrate three times
 
+**To Do**
+- Navigation System
+- Connecting to phone
+- Google Maps Integeration
+- Handling JSON files from Google Maps API
+
 ## Notes and Resources
 
 **Parts Used:**
