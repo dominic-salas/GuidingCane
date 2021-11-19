@@ -1,3 +1,6 @@
+#include <JsonListener.h>
+#include <JsonStreamingParser.h>
+
 #include <Adafruit_ATParser.h>
 #include <Adafruit_BLE.h>
 #include <Adafruit_BLEBattery.h>
@@ -7,11 +10,8 @@
 #include <Adafruit_BluefruitLE_SPI.h>
 #include <Adafruit_BluefruitLE_UART.h>
 
-#include <JsonListener.h>
-#include <JsonStreamingParser.h>
-
-#include <GoogleMapsApi.h>
-#include <GoogleMapsDirectionsApi.h> //not sure if this is actually imported
+//#include <GoogleMapsApi.h>
+//#include <GoogleMapsDirectionsApi.h> //not sure if this is actually imported
 
 /*
  * Code for vibration motor for the guiding cane project.
@@ -39,6 +39,7 @@ void setup()
   pinMode(motorPin, OUTPUT);
   //Adafruit_BluefruitLE_UART ble(BLUEFRUIT_HWSERIAL_NAME, BLUEFRUIT_UART_MODE_PIN);
   //TODO - setup google maps communication
+  Serial.begin(9600);
 }
 
 void loop() 
@@ -48,14 +49,16 @@ void loop()
    * INCLUDING delay and warning (warnDir()) before a turn
    * NOTE: warning will not trigger for stopping
    */
-  if (dir == 1){
+   dir = readMap();
+   Serial.print(dir);
+   if (dir == 1){
     turnRight();
-  }else if (dir == 2){
+   }else if (dir == 2){
     turnLeft();
-  }else if (dir == 3){
+   }else if (dir == 3){
     stopping();
-  }
-  dir = 0;
+   }
+   dir = 0;
 }
 
 /*
@@ -66,8 +69,8 @@ void loop()
  * @return random temporary integer from 1-3 to simulate a direction
  *         and test the vibration system
  */
-int readMap(){
-  int rand = random(1,4); //getting random int
+long readMap(){
+  long rand = random(1,4); //getting random long
   if (rand == 1 || rand == 2){
     warnDir(); //sends warning ping
     delay(3000); //waits for 3 seconds
@@ -81,13 +84,13 @@ int readMap(){
  */
 void warnDir(){
   digitalWrite(motorPin, HIGH); //vibrate
-  delay(100);
+  delay(300);
   digitalWrite(motorPin, LOW); //stop vibrating
   delay(300);
   digitalWrite(motorPin, HIGH);
   delay(100);
   digitalWrite(motorPin, LOW);
-  delay(50);
+  delay(100);
   digitalWrite(motorPin, HIGH);
   delay(100);
   digitalWrite(motorPin, LOW);
@@ -109,12 +112,24 @@ void turnLeft(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
 }
 
 /*
  * Stopping, pulses motor three times
  */
 void stopping(){
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
