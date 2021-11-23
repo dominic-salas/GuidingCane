@@ -103,6 +103,7 @@ void turnRight(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000  );
 }
 
 /*
@@ -116,6 +117,7 @@ void turnLeft(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000);
 }
 
 /*
@@ -133,4 +135,5 @@ void stopping(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000);
 }
