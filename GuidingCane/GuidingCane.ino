@@ -43,7 +43,7 @@ void loop()
     left = digitalRead(btn1);
     right = digitalRead(btn2);
     counter += 1;
-    if (counter >= 50){ //at least 50 loops to trigger other button
+    if (counter >= 100){ //at least 100 loops to trigger other button
       if (left == 1 && right == 1){
         dir = 3;
         left = 0;
@@ -78,15 +78,21 @@ void turnRight(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000  );
 }
 
 /*
  * Turning left, pulses motor twice
  */
 void turnLeft(){
-  digitalWrite(motorPin, HIGH); //vibratadded buttons, ree
+  digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000);
 }
 
 /*
@@ -96,4 +102,13 @@ void stopping(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000);
 }
