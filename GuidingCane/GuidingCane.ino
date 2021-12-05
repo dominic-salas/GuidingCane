@@ -1,3 +1,18 @@
+#include <JsonListener.h>
+#include <JsonStreamingParser.h>
+
+#include <Adafruit_ATParser.h>
+#include <Adafruit_BLE.h>
+#include <Adafruit_BLEBattery.h>
+#include <Adafruit_BLEEddystone.h>
+#include <Adafruit_BLEGatt.h>
+#include <Adafruit_BLEMIDI.h>
+#include <Adafruit_BluefruitLE_SPI.h>
+#include <Adafruit_BluefruitLE_UART.h>
+
+//#include <GoogleMapsApi.h>
+//#include <GoogleMapsDirectionsApi.h> //not sure if this is actually imported
+
 /*
  * Code for vibration motor for the guiding cane project.
  * Vibrating motor pulses to communicate with user:
@@ -8,67 +23,77 @@
  * 2 pulses = turn left
  * 3 pulses = stop
  * 
- * The user uses buttons to give signals:
- * 
- * btn1 = turn left
- * btn2 = turn right
- * btn1 and btn2 pressed simultaneously = stop
  */
 
 //init where pins are
-const int motorPin = 3; //or any other PWM pin
-const int btn1 = 2; //button for left
-const int btn2 = 4; //button for right
+int motorPin = 3; //or any other PWM pin
+
+int BLUEFRUIT_UART_MODE_PIN = 12;
+String BLUEFRUIT_HWSERIAL_NAME = "replace"; //TODO find serial name of module
 
 //direction - 0 is forward, 1 is right, 2 is left, 3 is stopped
-int left = 0;
-int right = 0;
 int dir = 0;
 
 void setup()
 {
   pinMode(motorPin, OUTPUT);
-  pinMode(btn1, INPUT);
-  pinMode(btn1, INPUT);
+  //Adafruit_BluefruitLE_UART ble(BLUEFRUIT_HWSERIAL_NAME, BLUEFRUIT_UART_MODE_PIN);
+  //TODO - setup google maps communication
+  Serial.begin(9600);
 }
 
 void loop() 
 {
-  // read the state of the pushbutton value:
-  left = digitalRead(btn1);
-  right = digitalRead(btn2);
-  //while loop to make pressing both buttons easier
-  int counter = 0;
-  while (left == 1 || right == 1){
-    left = digitalRead(btn1);
-    right = digitalRead(btn2);
-    counter += 1;
-    if (counter >= 50){ //at least 50 loops to trigger other button
-      if (left == 1 && right == 1){
-        dir = 3;
-        left = 0;
-        right = 0;
-      }
-      else{
-        if (right == 1){
-          dir = 1;
-        }else if (left == 1){
-          dir = 2;
-        }
-      }
-    }
-  }
-  
-  if (dir == 1){
+  /*
+   * TODO - communicate with maps to indicate a turn/direction 
+   * INCLUDING delay and warning (warnDir()) before a turn
+   * NOTE: warning will not trigger for stopping
+   */
+   dir = readMap();
+   Serial.print(dir);
+   if (dir == 1){
     turnRight();
-  }else if (dir == 2){
+   }else if (dir == 2){
     turnLeft();
-  }else if (dir == 3){
+   }else if (dir == 3){
     stopping();
+   }
+   dir = 0;
+}
+
+/*
+ * Method to read google maps and communicate with the phone
+ * to find direction instructions. Also uses warnDir() before left and right turns
+ * TODO - Google maps integration, bluetooth communication, throw warning pings
+ * 
+ * @return random temporary integer from 1-3 to simulate a direction
+ *         and test the vibration system
+ */
+long readMap(){
+  long rand = random(1,4); //getting random long
+  if (rand == 1 || rand == 2){
+    warnDir(); //sends warning ping
+    delay(3000); //waits for 3 seconds
   }
-  dir = 0;
-  left = 0;
-  right = 0;
+  return rand;
+}
+
+/*
+ * Method for making a small vibration pattern 
+ * to indicate a turn coming up
+ */
+void warnDir(){
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(300);
+  digitalWrite(motorPin, LOW); //stop vibrating
+  delay(300);
+  digitalWrite(motorPin, HIGH);
+  delay(100);
+  digitalWrite(motorPin, LOW);
+  delay(100);
+  digitalWrite(motorPin, HIGH);
+  delay(100);
+  digitalWrite(motorPin, LOW);
 }
 
 /*
@@ -78,15 +103,21 @@ void turnRight(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000  );
 }
 
 /*
  * Turning left, pulses motor twice
  */
 void turnLeft(){
-  digitalWrite(motorPin, HIGH); //vibratadded buttons, ree
+  digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000);
 }
 
 /*
@@ -96,4 +127,13 @@ void stopping(){
   digitalWrite(motorPin, HIGH); //vibrate
   delay(500);  // on .5 seconds
   digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(500);
+  digitalWrite(motorPin, HIGH); //vibrate
+  delay(500);  // on .5 seconds
+  digitalWrite(motorPin, LOW);  //stop vibrating
+  delay(2000);
 }
